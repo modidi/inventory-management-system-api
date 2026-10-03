@@ -1,5 +1,6 @@
 from flask import Flask, jsonify,request
 from data.inventory import inventory
+from services.openfoodfacts import get_product_by_barcode, search_products_by_name
 
 app = Flask(__name__)
 
@@ -67,6 +68,15 @@ def delete_item(item_id):
     inventory.remove(item)
     return jsonify({"message": "Item deleted successfully"}), 200
 
+@app.route("/product/barcode/<barcode>", methods=["GET"])
+def get_product(barcode):
+    product = get_product_by_barcode(barcode)
+    return jsonify(product), 200
+
+@app.route("/product/name/<name>", methods=["GET"])
+def search_product(name):
+    products = search_products_by_name(name)
+    return jsonify(products), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

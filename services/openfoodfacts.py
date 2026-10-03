@@ -20,5 +20,37 @@ def get_product_by_barcode(barcode):
         "quantity": product_data.get("quantity", "")
     }
 
+def search_products_by_name(name):
+    url = "https://world.openfoodfacts.org/cgi/search.pl"
 
-    return response.json()
+    params = {
+        "search_terms": name,
+        "search_simple": 1,
+        "action": "process",
+        "json": 1,
+        "page_size": 5
+    }
+
+    headers = {
+        "User-Agent": "InventoryManagementSystem/1.0"
+    }
+
+    response = requests.get(url, params=params, headers=headers)
+    data = response.json()
+
+    products = data.get("products", [])
+
+    return [
+        {
+            "barcode": product.get("_id", ""),
+            "name": product.get("product_name", ""),
+            "brand": product.get("brands", ""),
+            "category": product.get("categories", ""),
+            "quantity": product.get("quantity", "")
+        }
+        for product in products 
+    ]
+
+    
+
+  
