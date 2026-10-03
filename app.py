@@ -78,5 +78,29 @@ def search_product(name):
     products = search_products_by_name(name)
     return jsonify(products), 200
 
+@app.route("/inventory/from-product/<barcode>", methods=["POST"])
+def add_product_from_api(barcode):
+    product = get_product_by_barcode(barcode)
+
+    if not product.get("name"):
+        return jsonify({"error": "Product not found"}), 404
+
+    data = request.get_json() or {}
+
+    new_item = {
+        "id": max([item["id"] for item in inventory], default=0) + 1,
+        "barcode": product["barcode"],
+        "name": product["name"],
+        "brand": product["brand"],
+        "category": product["category"],
+        "quantity": product["quantity"],
+        "price": data.get("price",0), 
+        "stock": data.get("stock",0)   
+    }
+
+    inventory.append(new_item)
+    return jsonify(new_item), 201
+
+
 if __name__ == '__main__':
     app.run(debug=True)
