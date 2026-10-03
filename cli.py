@@ -91,3 +91,50 @@ def find_products_by_name(name):
     else:
         print("Error:", response.status_code)
     
+def menu():
+    while True:
+        print("\n===== Inventory Management System =====") 
+        print("1. View all Inventory")
+        print("2. View one item")
+        print("3. Add Item")
+        print("4. Update Item")
+        print("5. Delete Item")
+        print("6. Find Product by Barcode")
+        print("7. Find Product by Name")
+        print("8. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            view_inventory()
+
+        elif choice == "2":
+            item_id = int(input("Enter item ID: "))
+            view_item(item_id)
+
+        elif choice == "3":
+            add_item()
+
+        elif choice == "4":
+            item_id = int(input("Enter item ID to update: "))
+            update_item(item_id)
+
+        elif choice == "5":
+            item_id = int(input("Enter item ID to delete: "))
+            delete_item(item_id)
+
+        elif choice == "6":
+            barcode = input("Enter product barcode: ")
+            find_product_by_barcode(barcode)
+
+        elif choice == "7":
+            name = input("Enter product name: ")
+            find_products_by_name(name)
+
+        elif choice == "8":
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    menu()
