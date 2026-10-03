@@ -2,6 +2,20 @@ import requests
 
 BASE_URL = "http://127.0.0.1:5000"
 
+def get_float(prompt):
+    while True:
+        try:
+            return float(input(prompt))
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+def get_int(prompt):
+    while True:
+        try:
+            return int(input(prompt))
+        except ValueError:
+            print("Invalid input. Please enter a whole number.")
+
 def view_inventory():
     response = requests.get(f"{BASE_URL}/inventory")
 
@@ -25,8 +39,8 @@ def view_item(item_id):
 def add_item():
     name = input("Enter item name: ")
     category = input("Enter item category: ")
-    price = float(input("Enter item price: "))
-    stock = int(input("Enter item stock: "))
+    price = get_float("Enter item price: ")
+    stock = get_int("Enter item stock: ")
 
     data = {
         "name": name,
@@ -50,10 +64,18 @@ def update_item(item_id):
     data = {}
 
     if price:
-        data["price"] = float(price)
+        try:
+            data["price"] = float(price)
+        except ValueError:
+            print("Invalid price. Please enter a number.")
+            return
 
     if stock:
-        data["stock"] = int(stock)
+        try:
+            data["stock"] = int(stock)
+        except ValueError:
+            print("Invalid stock. Please enter a whole number.")
+            return
 
     response = requests.patch(f"{BASE_URL}/inventory/{item_id}", json=data)
 
@@ -93,8 +115,8 @@ def find_products_by_name(name):
 
 def add_product_from_api():
     barcode = input("Enter product barcode: ")
-    price = float(input("Enter item price: "))
-    stock = int(input("Enter item stock: "))
+    price = get_float("Enter item price: ")
+    stock = get_int("Enter item stock: ")
     
     data = {
         "price": price,
@@ -129,18 +151,18 @@ def menu():
             view_inventory()
 
         elif choice == "2":
-            item_id = int(input("Enter item ID: "))
+            item_id = get_int("Enter item ID to view: ")
             view_item(item_id)
 
         elif choice == "3":
             add_item()
 
         elif choice == "4":
-            item_id = int(input("Enter item ID to update: "))
+            item_id = get_int("Enter item ID to update: ")
             update_item(item_id)
 
         elif choice == "5":
-            item_id = int(input("Enter item ID to delete: "))
+            item_id = get_int("Enter item ID to delete: ")
             delete_item(item_id)
 
         elif choice == "6":
