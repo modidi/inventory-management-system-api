@@ -4,11 +4,16 @@ def get_product_by_barcode(barcode):
     url = f"https://world.openfoodfacts.org/api/v3/product/{barcode}"
 
     headers = {
-        "User-Agent": "InventoryMangementSystem/1.0"
+        "User-Agent": "InventoryManagementSystem/1.0"
     }
 
-    response = requests.get(url, headers=headers)
-    data = response.json()
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+    except requests.RequestException as e:
+        print(f"Error fetching product data for barcode {barcode}: {e}")
+        return None
 
     product_data = data.get("product", {})
 
