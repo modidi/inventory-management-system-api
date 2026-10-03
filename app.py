@@ -82,7 +82,7 @@ def search_product(name):
 def add_product_from_api(barcode):
     product = get_product_by_barcode(barcode)
 
-    if not product.get("name"):
+    if not product or not product.get("name"):
         return jsonify({"error": "Product not found"}), 404
 
     data = request.get_json() or {}

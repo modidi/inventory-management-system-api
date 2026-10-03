@@ -1,31 +1,47 @@
 inventory = [
     {
         "id": 1,
-        "name": "Bread",
-        "category": "Bakery",
-        "price": 120,
-        "stock": 50
+        "barcode": None,
+        "name": "Vanilla Yoghurt",
+        "brand": "Brookside",
+        "category": "Dairy",
+        "quantity": "500 g",
+        "ingredients_text": "Milk, Sugar, Vanilla Extract",
+        "price": 200,
+        "stock": 70
     },
     {
         "id": 2,
+        "barcode": None,
         "name": "Dark Chocolate Bar",
-        "category": "Snacks",
-        "price": 250,
-        "stock": 30
+        "brand": "Lindt",
+        "category": "Chocolate",
+        "quantity": "100 g",
+        "ingredients_text": "Cocoa, Sugar, Cocoa Butter",
+        "price": 300,
+        "stock": 35
     },
     {
         "id": 3,
-        "name": "Milk",
-        "category": "Dairy",
-        "price": 80,
-        "stock": 100
+        "barcode": None,
+        "name": "Apple Juice",
+        "brand": "Delmonte",
+        "category": "Beverages",
+        "quantity": "1 L",
+        "ingredients_text": "Apple Juice Concentrate, Water",
+        "price": 250,
+        "stock": 40
     },
     {
         "id": 4,
-        "name": "Apple",
-        "category": "Fruits",
-        "price": 30,
-        "stock": 150
+        "barcode": None,
+        "name": "Whole Wheat Bread",
+        "brand": "Festive",
+        "category": "Bakery",
+        "quantity": "500 g",
+        "ingredients_text": "Whole Wheat Flour, Water, Yeast, Salt",
+        "price": 100,
+        "stock": 30
     }
 ]
     
