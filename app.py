@@ -40,6 +40,22 @@ def add_item():
     inventory.append(new_item)
     return jsonify(new_item), 201
 
+@app.route("/inventory/<int:item_id>", methods=["PATCH"])
+def update_item(item_id):
+    item = find_item(item_id)
+
+    if not item:
+        return jsonify({"error": "Item not found"}), 404
+
+    data = request.get_json() or {}
+
+    allowed_fields = ["name", "category", "price", "stock"]
+
+    for field in allowed_fields:
+        if field in data:
+            item[field] = data[field]  
+ 
+    return jsonify(item), 200
 
 
 if __name__ == '__main__':
