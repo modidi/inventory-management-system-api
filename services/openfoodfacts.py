@@ -40,8 +40,18 @@ def search_products_by_name(name):
         "User-Agent": "InventoryManagementSystem/1.0"
     }
 
-    response = requests.get(url, params=params, headers=headers)
-    data = response.json()
+    try:
+        response = requests.get(
+            url,
+            params=params,
+            headers=headers,
+            timeout=10
+        )
+        response.raise_for_status()
+        data = response.json()
+    except requests.RequestException as e:
+        print(f"Error searching for product {name}: {e}")
+        return []
 
     products = data.get("products", [])
 
