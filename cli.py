@@ -90,6 +90,25 @@ def find_products_by_name(name):
             print(product)
     else:
         print("Error:", response.status_code)
+
+def add_product_from_api():
+    barcode = input("Enter product barcode: ")
+    price = float(input("Enter item price: "))
+    stock = int(input("Enter item stock: "))
+    
+    data = {
+        "price": price,
+        "stock": stock  
+    }
+
+    response = requests.post(f"{BASE_URL}/inventory/from-product/{barcode}", json=data)
+
+    if response.status_code == 201:
+        item = response.json()
+        print("Product added to inventory:")
+        print(item)  
+    else:
+        print("Error:", response.status_code)
     
 def menu():
     while True:
@@ -101,7 +120,8 @@ def menu():
         print("5. Delete Item")
         print("6. Find Product by Barcode")
         print("7. Find Product by Name")
-        print("8. Exit")
+        print("8. Add Product from OpenFoodFacts API")
+        print("9. Exit")
 
         choice = input("Enter your choice: ")
 
@@ -132,7 +152,12 @@ def menu():
             find_products_by_name(name)
 
         elif choice == "8":
+            add_product_from_api()
+
+        elif choice == "9":
+            print("Exiting the program.")
             break
+            
         else:
             print("Invalid choice. Please try again.")
 
