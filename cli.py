@@ -217,6 +217,10 @@ def find_product_by_barcode(barcode):
     if response.status_code == 200:
         product = response.json()
 
+        if not product:
+            console.print("[bold red]Product not found.[/bold red]")
+            return
+
         console.print(
             Panel(
                 f"[bold]Name:[/bold] {product.get('name', '')}\n"

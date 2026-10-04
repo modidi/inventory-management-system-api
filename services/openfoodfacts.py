@@ -15,7 +15,10 @@ def get_product_by_barcode(barcode):
         print(f"Error fetching product data for barcode {barcode}: {e}")
         return None
 
-    product_data = data.get("product", {})
+    product_data = data.get("product")
+
+    if not product_data or not product_data.get("product_name"):
+        return None
 
     return {
         "barcode": barcode,
@@ -65,7 +68,3 @@ def search_products_by_name(name):
         }
         for product in products 
     ]
-
-    
-
-  
