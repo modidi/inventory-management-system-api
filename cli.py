@@ -5,11 +5,34 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+#Session
+client = requests.Session()
 
+#Set console width
 console = Console(width=max(shutil.get_terminal_size().columns, 100))
 
 BASE_URL = "http://127.0.0.1:5000"
 
+#Admin login
+def login():
+    while True:
+        username = input("Username: ")
+        password = input("Password: ")
+
+        response = client.post(f"{BASE_URL}/login",json={
+            "username": username,
+            "password": password
+        })
+
+        if response.status_code == 200:
+            console.print(
+                Panel("Login successful! Welcome, Admin.")
+            )
+            return True
+        
+        console.print(
+            Panel("Invalid username or password. Try again.")
+        )
 
 def get_float(prompt):
     while True:
@@ -28,9 +51,9 @@ def get_int(prompt):
                 "[bold red] Invalid input. Please enter a whole number.[/bold red]"
             )
 
-
+#View all inventory
 def view_inventory():
-    response = requests.get(f"{BASE_URL}/inventory")
+    response = client.get(f"{BASE_URL}/inventory")
 
     if response.status_code == 200:
         items = response.json()
@@ -59,8 +82,9 @@ def view_inventory():
             f"[bold red] Error: {response.status_code}[/bold red]"
         )
 
+#View one inventory item
 def view_item(item_id):
-    response = requests.get(f"{BASE_URL}/inventory/{item_id}")
+    response = client.get(f"{BASE_URL}/inventory/{item_id}")
 
     if response.status_code == 200:
         item = response.json()
@@ -81,7 +105,7 @@ def view_item(item_id):
             f"[bold red] Error: {response.status_code}[/bold red]"
         )
 
-
+#Add inventory item
 def add_item():
     name = input("Enter item name: ")
     category = input("Enter item category: ")
@@ -95,7 +119,7 @@ def add_item():
         "stock": stock,
     }
 
-    response = requests.post(f"{BASE_URL}/inventory", json=data)
+    response = client.post(f"{BASE_URL}/inventory", json=data)
 
     if response.status_code == 201:
         item = response.json()
@@ -117,7 +141,7 @@ def add_item():
             f"[bold red] Error: {response.status_code}[/bold red]"
         )
 
-
+#Update inventory item
 def update_item(item_id):
     price = input("Enter new price (leave blank to keep current): ")
     stock = input("Enter new stock (leave blank to keep current): ")
@@ -142,7 +166,7 @@ def update_item(item_id):
             )
             return
 
-    response = requests.patch(
+    response = client.patch(
         f"{BASE_URL}/inventory/{item_id}",
         json=data,
     )
@@ -166,9 +190,9 @@ def update_item(item_id):
             f"[bold red] Error: {response.status_code}[/bold red]"
         )
 
-
+#Delete inventory item
 def delete_item(item_id):
-    response = requests.delete(f"{BASE_URL}/inventory/{item_id}")
+    response = client.delete(f"{BASE_URL}/inventory/{item_id}")
 
     if response.status_code == 200:
         console.print(
@@ -184,9 +208,9 @@ def delete_item(item_id):
             f"[bold red] Error: {response.status_code}[/bold red]"
         )
 
-
+#Search by barcode
 def find_product_by_barcode(barcode):
-    response = requests.get(
+    response = client.get(
         f"{BASE_URL}/product/barcode/{barcode}"
     )
 
@@ -210,9 +234,9 @@ def find_product_by_barcode(barcode):
             f"[bold red] Error: {response.status_code}[/bold red]"
         )
 
-
+#Search by name
 def find_products_by_name(name):
-    response = requests.get(
+    response = client.get(
         f"{BASE_URL}/product/name/{name}"
     )
 
@@ -247,7 +271,7 @@ def find_products_by_name(name):
             f"[bold red] Error: {response.status_code}[/bold red]"
         )
 
-
+#Add API product
 def add_product_from_api():
     barcode = input("Enter product barcode: ")
     price = get_float("Enter item price: ")
@@ -258,7 +282,7 @@ def add_product_from_api():
         "stock": stock,
     }
 
-    response = requests.post(
+    response = client.post(
         f"{BASE_URL}/inventory/from-product/{barcode}",
         json=data,
     )
@@ -284,7 +308,7 @@ def add_product_from_api():
             f"[bold red] Error: {response.status_code}[/bold red]"
         )
 
-
+#Main Menu
 def menu():
     while True:
         console.print(
@@ -298,18 +322,12 @@ def menu():
         console.print("[bold cyan] 1.[/bold cyan] View Inventory")
         console.print("[bold cyan] 2.[/bold cyan] View One Item")
         console.print("[bold green] 3.[/bold green] Add Item")
-        console.print("[bold yellow]  4.[/bold yellow] Update Item")
-        console.print("[bold red]  5.[/bold red] Delete Item")
-        console.print(
-            "[bold magenta] 6.[/bold magenta] Find Product by Barcode"
-        )
-        console.print(
-            "[bold magenta] 7.[/bold magenta] Find Products by Name"
-        )
-        console.print(
-            "[bold blue] 8.[/bold blue] Add Product from OpenFoodFacts"
-        )
-        console.print("[bold white] 9.[/bold white] Exit")
+        console.print("[bold yellow] 4.[/bold yellow] Update Item")
+        console.print("[bold red] 5.[/bold red] Delete Item")
+        console.print("[bold magenta] 6.[/bold magenta] Find Product by Barcode")
+        console.print("[bold magenta] 7.[/bold magenta] Find Products by Name")
+        console.print("[bold blue] 8.[/bold blue] Add Product from OpenFoodFacts")
+        console.print("[bold white] 9.[/bold white] Logout")
 
         choice = input("\nEnter your choice: ")
 
@@ -343,19 +361,24 @@ def menu():
             add_product_from_api()
 
         elif choice == "9":
+            client.post(f"{BASE_URL}/logout")
+
             console.print(
                 Panel.fit(
-                    " Goodbye! Thanks for using the Inventory Management System.",
+                    " Logged out successfully",
                     border_style="cyan",
                 )
             )
-            break
+            return
 
         else:
             console.print(
                 "[bold red] Invalid choice. Please try again.[/bold red]"
             )
 
-
+#Start CLI
 if __name__ == "__main__":
-    menu()
+    while True:
+        login()
+        menu()
+    
