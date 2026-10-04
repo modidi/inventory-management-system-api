@@ -16,6 +16,8 @@ This is a Flask-based inventory management system. It provides a REST API for ma
 * Search products by **barcode**
 * Search products by **name**
 * Add an OpenFoodFacts product directly to the inventory
+* Session-based administrator authentication
+* Login and logout
 * Interactive command-line interface (CLI)
 * CLI inventory management
 * CLI product lookup and search
@@ -50,6 +52,7 @@ All project dependencies are included in `requirements.txt`.
 
 ```text
 inventory-management-system-api/
+
 │
 ├── app.py
 ├── cli.py
@@ -75,6 +78,7 @@ inventory-management-system-api/
 
 ```bash
 git clone https://github.com/modidi/inventory-management-system-api.git
+
 cd inventory-management-system-api
 ```
 
@@ -116,6 +120,13 @@ http://127.0.0.1:5000
 
 ## API Routes
 
+### Authentication Routes
+
+| Method | Endpoint  | Description                   |
+| ------ | --------- | ----------------------------- |
+| POST   | `/login`  | Log in as administrator       |
+| POST   | `/logout` | Log out and clear the session |
+
 ### Inventory Routes
 
 | Method | Endpoint          | Description              |
@@ -133,6 +144,58 @@ http://127.0.0.1:5000
 | GET    | `/product/barcode/<barcode>`        | Find a product using its barcode                           |
 | GET    | `/product/name/<name>`              | Search for products by name                                |
 | POST   | `/inventory/from-product/<barcode>` | Fetch a product from OpenFoodFacts and add it to inventory |
+
+## Authentication
+
+The API uses Flask sessions for administrator authentication.
+
+### Login
+
+```text
+POST /login
+```
+
+Use the following administrator credentials:
+
+```json
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+A successful login creates an authenticated session.
+
+### Logout
+
+```text
+POST /logout
+```
+
+This clears the administrator session.
+
+### Protected Routes
+
+The following inventory routes require an authenticated session:
+
+* `GET /inventory`
+* `GET /inventory/<id>`
+* `POST /inventory`
+* `PATCH /inventory/<id>`
+* `DELETE /inventory/<id>`
+* `POST /inventory/from-product/<barcode>`
+
+If a user tries to access a protected route without logging in, the API returns:
+
+```json
+{
+  "error": "Login required"
+}
+```
+
+with HTTP status `401`.
+
+The OpenFoodFacts product search routes remain publicly accessible.
 
 ## Inventory CRUD
 
@@ -339,7 +402,7 @@ The CLI provides the following options:
 6. Find Product by Barcode
 7. Find Products by Name
 8. Add Product from OpenFoodFacts
-9. Exit
+9. Logout
 ```
 
 ### Rich CLI Interface
@@ -354,6 +417,21 @@ Rich is used for:
 * Error messages
 * Styled menu presentation
 * Improved terminal readability
+
+### CLI Authentication
+
+When the CLI starts, the administrator must log in before accessing the inventory menu.
+
+Example:
+
+```text
+Username: admin
+Password: admin123
+```
+
+The CLI uses a session to maintain the authenticated login.
+
+Selecting **Option 9 — Logout** ends the current session and returns to the login screen.
 
 ### CLI Inventory Management
 
@@ -405,7 +483,9 @@ Example:
 
 ```text
 Enter product barcode: 3017620422003
+
 Enter item price: 700
+
 Enter item stock: 400
 ```
 
@@ -424,6 +504,7 @@ The application handles common errors including:
 * Invalid stock input
 * Invalid CLI menu choices
 * Invalid numeric input
+* Unauthorized access to protected routes
 
 ## Testing
 
@@ -441,6 +522,7 @@ Tests cover:
 
 * Flask API routes
 * Inventory CRUD operations
+* Authentication
 * CLI functionality
 * OpenFoodFacts integration
 * External API responses
@@ -449,7 +531,7 @@ Tests cover:
 ### Current Test Result
 
 ```text
-12 passed in 0.66s
+13 passed
 ```
 
 All automated tests are passing.
@@ -467,10 +549,13 @@ The final `main` branch contains:
 * Flask REST API
 * Inventory CRUD operations
 * Mock inventory data
+* Session-based administrator authentication
+* Login and logout
 * OpenFoodFacts integration
 * Barcode product lookup
 * Product name search
 * CLI functionality
+* CLI authentication
 * CLI error handling
 * Rich CLI interface
 * Automated tests
