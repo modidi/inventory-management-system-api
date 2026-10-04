@@ -2,7 +2,7 @@ from unittest.mock import patch, Mock
 
 import cli
 
-@patch("cli.requests.patch")
+@patch("cli.client.get")
 def test_view_inventory(mock_get, capsys):
     mock_response = Mock()
     mock_response.status_code = 200
@@ -15,6 +15,7 @@ def test_view_inventory(mock_get, capsys):
             "stock": 20
         }
     ]
+
     mock_get.return_value = mock_response
 
     cli.view_inventory()
@@ -22,7 +23,7 @@ def test_view_inventory(mock_get, capsys):
     captured = capsys.readouterr()
     assert "Vanilla Yoghurt" in captured.out
 
-@patch("cli.requests.post")
+@patch("cli.client.post")
 def test_add_item(mock_post, monkeypatch, capsys):
     inputs = iter([
         "Test Product",
@@ -51,7 +52,7 @@ def test_add_item(mock_post, monkeypatch, capsys):
 
     assert "Test Product" in captured.out
 
-@patch("cli.requests.patch")
+@patch("cli.client.patch")
 def test_update_item(mock_patch, monkeypatch, capsys):
     inputs = iter([
         "20.0",
@@ -80,7 +81,7 @@ def test_update_item(mock_patch, monkeypatch, capsys):
         "http://127.0.0.1:5000/inventory/1",
         json={"price": 20.0, "stock": 200}  
     )
-@patch("cli.requests.delete")
+@patch("cli.client.delete")
 def test_delete_item(mock_delete, capsys):
     mock_response = Mock()
     mock_response.status_code = 200

@@ -4,9 +4,24 @@ from app import app
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
+
     with app.test_client() as client:
+        client.post('/login',json={
+            "username": "admin",
+             "password": "admin123"
+         })
+         
         yield client
 
+def test_login_required():
+    app.config['TESTING'] = True
+
+    with app.test_client() as client:
+        response = client.get('/inventory')
+
+        assert response.status_code == 401
+        assert response.json["error"] == "Login required"
+  
 def test_get_inventory(client):
     response = client.get('/inventory')
 
